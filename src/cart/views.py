@@ -9,7 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import Cart, CartItem
 from products.models import Variation
 from orders.models import UserCheckout
-from orders.mixins import CartOrderMixin
+from orders.mixins import CartOrderMixin, LoginRequiredMixin
 from orders.forms import GuestCheckoutForm
 
 
@@ -150,7 +150,7 @@ class CartView(SingleObjectMixin, View):
         return render(request, template, context)
 
 
-class CheckoutView(CartOrderMixin, FormMixin, DetailView):
+class CheckoutView(LoginRequiredMixin, CartOrderMixin, FormMixin, DetailView):
     model = Cart
     template_name = "cart/checkout_view.html"
     form_class = GuestCheckoutForm
