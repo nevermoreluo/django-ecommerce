@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+<script>
+{% block jquery %}
+    function changePrice(){
+        var price = $(".variation_select option:selected").attr("data-price")
+        var sale_price = $(".variation_select option:selected").attr("data-sale-price")
+        if (sale_price != "" && sale_price != "None" && sale_price != null ) {
+            $("#price").html("<h3>" + sale_price + "$ <small class='og-price'>原价: " + price  + "$</small></h3>");
+        }
+        else {
+            $("#price").html(price);
+        }
+    }
+    changePrice()
+    $(".variation_select").change(function(){
+        changePrice()
+        // var img = $(".variation_select option:selected").attr("data-img")
+        // $("img").attr("src", img);
+    })
+// ajax add to cart
+
+function chooseVariation(){
+    var variation = "{{ variation }}"
+    if (variation){
+        var count=$(".variation_select option").length;
+
+        for(var i=0;i<count;i++){
+            if($(".variation_select ").get(0).options[i].text == variation){
+                $(".variation_select ").get(0).options[i].selected = true;
+                break;
+            }
+        }
+        changePrice()
+    }
+}
+
+     $(document).ready(function(){
+
+        chooseVariation()
+     })
+
+$("#submit-btn").click(function(event){
+    event.preventDefault();
+    var formData = $("#add-form").serialize();
+    console.log(formData);
+    $.ajax({
+        type: "GET", // "POST"
+        url: "{% url 'cart' %}",
+        data: formData,
+        success: function(data) {
+            showFlashMessage(data.flash_message);
+            updateCartItemCount();
+        },
+        error: function(response, error) {
+            // console.log(response)
+            // console.log(error)
+            $("#add-form").submit()
+        }
+    })
+
+    // $("#add-form").submit()
+
+})
+{% endblock %}
+</script>
+
+{% block content %}
+<div class='row'>
+
+    <div class='col-sm-8'>
+        <h2>{{ object.title }}</h2>
+        {% if object.get_image_url %}
+            <div>
+                    <img class='img-responsive' src='{{ object.get_image_url }}' />
+            </div>
+        {% endif %}
+
+        <p class='lead'>
+        {{ object.description }}
+        </p>
+    </div>
+
+    <!-- Product Sidebar -->
+    <div class='col-sm-4'>
+                <h2>Price:</h2>
+                <h3 id="price">
+                {% if object.sale_price %}
+                    {{ object.sale_price }}$
+                    <small class='og-price'>原价: {{ object.price }}$</small>
+                {% else %}
+                    {{ object.price }}$
+                {% endif %}
+                </h3>
+            {% if object.variation_set.count > 0 %}
+        <form method='GET' action="{% url 'cart' %}">
+                    <select name='item' class='form-control variation_select'>
+                    {% for variation in object.variation_set.all %}
+                        <option data-sale-price="{{ variation.sale_price }}" data-price="{{ variation.price }}" value="{{ variation.id }}">{{ variation }}</option>
+                    {% endfor %}
+                    </select>
+            {% endif %}
+            </br>
+            <input class='form-control' type='number' name='qty' value='1' />
+            </br>
+            <input type='submit' value='Add to Cart' class='btn btn-default' />
+        </form>
+        <hr>
+            <p>
+                Share</br>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
+                    <i class="fa fa-facebook-square fa-3x" aria-hidden="true"></i>
+                </a>
+                <a href="https://twitter.com/home?status=I'm%20shopping%20on%20the%20中文%20电商...@nevermoreluo%20{{ request.build_absolute_uri }}">
+                    <i class="fa fa-twitter-square fa-3x" aria-hidden="true"></i>
+                </a>
+            </p>
+        </hr>
+        <h4>Related Product</h4>
+        {% for product in related %}
+            <div class='col-xs-6'>
+            {% include "products/product_thumbnail.html" with product=product price="True" %}
+            </div>
+            {% cycle '' '</div><div class="row">' %}
+        {% endfor %}
+    </div>
+    <!-- End Product Sidebar -->
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+<script>
+{% block jquery %}
+$(".item-qty").change(function(){
+    // $(this).next(".btn-update").fadeIn();
+
+    // event.preventDefault();
+    // .prev(h1)
+    var item = $(this).prev("input[type='hidden']").val();
+    var qty = $(this).val()
+    var data = {
+        item: item,
+        qty: qty
+    }
+    console.log(data);
+    $.ajax({
+        type: "GET", // "POST"
+        url: "{% url 'cart' %}",
+        data: data,
+        success: function(data) {
+            $("#jquery-message").text("Added " + data.item_added + " Deleted " + data.deleted)
+            if (data.deleted){
+                $("#item-"+item).fadeOut();
+                $("#subtotal").text(data.subtotal);
+                $("#taxtotal").text(data.tax_total);
+                $("#carttotal").text(data.cart_total);
+
+                $("#mini-cart-item-"+item).fadeOut();
+            } else {
+                $("#item-line-total-"+item).text(data.line_total);
+                $("#subtotal").text(data.subtotal);
+                $("#taxtotal").text(data.tax_total);
+                $("#carttotal").text(data.cart_total);
+
+                $("#mini-cart-item-"+item +"> div > strong").text(qty);
+                $(".sub-price").text(data.subtotal);
+            }
+
+            if (data.total_items == 0 ) {
+                console.log(data);
+                $(".table").fadeOut()
+                var template = "{% include 'cart/empty_cart.html' %}";
+                $(".main-content").html(template);
+
+            }
+
+            var message = ""
+            if (data.item_added) {
+                message = "New item added"
+            } else if (data.deleted){
+                message = "Item removed"
+            } else {
+                message = "Item updated"
+            }
+            showFlashMessage(message);
+            updateCartItemCount()
+            },
+        error: function(response, error) {
+            // console.log(response)
+            // console.log(error)
+            $("#add-form").submit()
+        }
+    })
+
+
+
+
+
+});
+
+{% endblock %}
+</script>
+
+{% block content %}
+
+{% if object.cartitem_set.count < 1 %}
+
+{% include "cart/empty_cart.html" %}
+{% else %}
+<section class="main-container col1-layout wow bounceInUp animated">
+<div class="main container">
+  <div class="col-main">
+    <div class="cart">
+      <div class="page-title">
+        <h2>Shopping Cart Summary</h2>
+      </div>
+      <div class="page-content page-order">
+<!--         <ul class="step">
+          <li class="current-step"><span>01. Summary</span></li>
+          <li><span>02. Sign in</span></li>
+          <li><span>03. Address</span></li>
+          <li><span>04. Shipping</span></li>
+          <li><span>05. Payment</span></li>
+        </ul> -->
+        <!-- <div class="heading-counter warning">Your shopping cart contains: <span>3 Product</span> </div> -->
+        <div class="order-detail-content">
+          <div class="table-responsive">
+            <table class="table table-bordered cart_summary">
+              <thead>
+
+                <tr>
+                  <th class="cart_product">Product</th>
+                  <th>Description</th>
+                  <!-- <th>Avail.</th> -->
+                  <th>Unit price</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th  class="action"><i class="fa fa-trash-o"></i></th>
+                </tr>
+              </thead>
+              <tbody>
+               {% for item in object.cartitem_set.all %}
+                <tr>
+                  <td class="cart_product"><a href="{{ item.item.get_absolute_url }}"><img src="{{ item.item.product.get_image_url }}" alt="Product"></a></td>
+                  <td class="cart_description"><p class="product-name"><a href="{{ item.item.get_absolute_url }}">{{ item }} </a></p></td>
+<!--                   <td class="availability in-stock"><span class="label">In stock</span></td> -->
+                  <td class="price"><span>${{ item.item.get_price }}</span></td>
+                  <td class="qty"><form action="." method="GET" ><input type='hidden' name='item' value='{{ item.item.id }}' /><input type='number' class='item-qty' name='qty' value='{{ item.quantity }}' /><input type='submit' class='btn-update btn btn-link' value='Update item' style='display:none;'/></form></td>
+                  <td class="price" id='item-line-total-{{ item.item.id }}'><span>${{ item.line_item_total }} </span></td>
+                  <td class="action"><a href="{% url 'cart' %}?item={{ item.item.pk }}&qty=-1"><i class="fa fa-times" aria-hidden="true"></i></a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3"><strong>Total</strong></td>
+                  <td colspan="2" id='subtotal'><strong>$ {{ object.subtotal }}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="cart_navigation"> <a class="continue-btn" href="{% url 'home' %}"><i class="fa fa-arrow-left"> </i>&nbsp; Continue shopping</a> <a class="checkout-btn" href="{% url 'checkout' %}"><i class="fa fa-check"></i> Proceed to checkout</a> </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+{% endif %}
+{% endblock %}

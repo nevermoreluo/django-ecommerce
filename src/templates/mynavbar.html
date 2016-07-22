@@ -1,0 +1,222 @@
+{% load staticfiles %}
+{% load items %}
+{% get_cart_items request as cart %}
+{% get_random_items cart as random_items %}
+<!-- header start-->
+<!-- <style>
+
+.pr-img-area img{width:260px; height:350px}
+</style> -->
+<header>
+    <div class="header-container">
+      <div class="header-top">
+        <div class="container">
+          <div class="row">
+            <!-- top links -->
+            <div class="headerlinkmenu col-lg-8 col-md-7 col-sm-7 col-xs-6">
+              <div class="links">
+                <form class="form-inline" method='GET' role="search" action='{%url "products" %}'>
+                  <div class="form-group">
+                  <input type="text" class="form-control " placeholder="Search" name='q' value='{{ request.GET.q }}'><span class="hidden-xs"/>
+                  </div>
+                  <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+                {% if request.user.username %}
+                <div class="myaccount"><a title="My Account" href="account_page.html"><i class="fa fa-user"></i>
+                <span class="hidden-xs">{{ request.user.username }}</span></a></div>
+                {% else %}
+                <div class="myaccount"></div>
+                {% endif %}
+                {% if request.user.is_authenticated %}
+                <div class="logout">
+                  <a href="{% url 'auth_logout' %}"><i class="fa fa-unlock-alt"></i><span class="hidden-xs">Logout</span></a>
+                </div>
+                {% else %}
+                <div class="register">
+                  <a href="{% url 'registration_register' %}"><i class="fa fa-heart"></i><span class="hidden-xs">Register</span></a>
+                </div>
+                {% if not "/accounts/login" in request.get_full_path %}
+                <div class="login">
+                  <a href="{% url 'auth_login' %}"><i class="fa fa-lock"></i><span class="hidden-xs">Login</span></a>
+                </div>
+                {% endif %}
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-3 col-xs-12">
+            <!-- Header Logo -->
+            <div class="logo"><a title="e-commerce" href="index.html" class="logo-color"><img alt="e-commerce" src=""></a> </div>
+            <!-- End Header Logo -->
+          </div>
+          <!--support client-->
+          <div class="col-xs-8 col-sm-5 col-md-6 hidden-xs">
+            <div class="support-client">
+              <div class="row">
+                <div class="col-md-6 col-sm-10">
+                  <div class="box-container free-shipping">
+                    <div class="box-inner">
+                      <h2>Free shipping</h2>
+                      <p>On order over $199</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 hidden-sm">
+                  <div class="box-container money-back">
+                    <div class="box-inner">
+                      <h2>Money back 100%</h2>
+                      <p>Within 30 Days after delivery</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- top cart -->
+
+          <div class="col-lg-3 col-xs-12 top-cart">
+            <div class="mm-toggle-wrap">
+              <div class="mm-toggle"> <i class="fa fa-align-justify"></i><span class="mm-label">Menu</span> </div>
+            </div>
+            <div class="top-cart-contain">
+              <div class="mini-cart">
+                <div data-toggle="dropdown" data-hover="dropdown" class="basket dropdown-toggle"><a href="{% url 'cart' %}" onClick="window.location.href='{% url 'cart' %}'"><i class="fa fa-shopping-cart"></i><span class="cart-title" id='cart-count-badge'>Shopping Cart ({{ cart.cartitem_set.count | default:"0" }})</span></a></div>
+                <div>
+                  <div class="top-cart-content">
+                    <div class="block-subtitle">Recently added item(s)</div>
+                    <ul id="cart-sidebar" class="mini-products-list">
+
+                      {% for item in cart.cartitem_set.all %}
+                      <li class="item odd" id="mini-cart-item-{{ item.item.pk }}"> <a href="#" title="Ipsums Dolors Untra" class="product-image"><img class="img-responsive" alt="Responsive image" src="{{ item.item.product.get_image_url }}" alt="Lorem ipsum dolor" width="65"></a>
+                        <div class="product-details"> <a href="{% url 'cart' %}?item={{ item.item.pk }}&qty=-1" title="Remove This Item" class="remove-cart"><i class="fa fa-times"></i></a>
+                          <p class="product-name"><a href="{{ item.item.get_absolute_url }}">{{ item }}</a> </p>
+                          <strong>{{ item.quantity }}</strong> x <span class="price">${{ item.item.get_price }}</span> </div>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <div class="top-subtotal">Subtotal: <span class="sub-price">${{ cart.subtotal }}</span></div>
+<!--                     <div class="top-subtotal">Taxtotal: <span class="tax-price">${{ cart.tax_total }}</span></div>
+                    <div class="top-subtotal">Total: <span class="total-price">${{ cart.total }}</span></div> -->
+                    <div class="actions">
+                      <button class="btn-checkout" type="button"><a href="{% url 'checkout' %}" onClick="window.location.href='{% url 'checkout' %}'"><i class="fa fa-check"></i><span>Checkout</span></a></button>
+                      <button class="view-cart" type="button"><a href="{% url 'cart' %}" onClick="window.location.href='{% url 'cart' %}'"><i class="fa fa-shopping-cart"></i> <span>View Cart</span></a></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- end header -->
+
+ <!-- Navbar -->
+  <nav class="">
+    <div class="stick-logo"></div>
+    <div class="container">
+      <div class="row">
+        <div class="mtmegamenu">
+          <ul>
+            <li class="mt-root demo_custom_link_cms">
+              <div class="mt-root-item"><a href="{% url 'home' %}">
+                <div class="title title_font"><span class="title-text">Home</span></div>
+                </a></div>
+            </li>
+            <li class="mt-root">
+              <div class="mt-root-item"><a href="#">
+                <div class="title title_font"><span class="title-text">Page</span></div>
+                </a></div>
+              <ul class="menu-items col-xs-12">
+                <li class="menu-item depth-1 menucol-1-5 ">
+                  <div class="title title_font"> <a href="#"> Template Page </a></div>
+                  <ul class="submenu">
+                    <li class="menu-item">
+                      <div class="title"> <a href="shop_grid.html"> shop grid </a></div>
+                    </li>
+                    <li class="menu-item">
+                      <div class="title"> <a href="shop_grid_left_sidebar.html"> shop grid left sidebar</a></div>
+                    </li>
+                    <li class="menu-item">
+                      <div class="title"> <a href="shop_list.html"> shop list </a></div>
+                    </li>
+                    <li class="menu-item">
+                      <div class="title"> <a href="{% url 'cart' %}"> shopping cart </a></div>
+                    </li>
+                  </ul>
+                </li>
+                <li class="menu-item depth-1 menucol-1-5 ">
+                  <div class="title title_font"> <a href="#"> Template Page </a></div>
+                  <ul class="submenu">
+                    <li class="menu-item">
+                      <div class="title"> <a href="single_product.html"> single product </a></div>
+                    </li>
+                    <li class="menu-item">
+                      <div class="title"> <a href="{% url 'checkout' %}"> checkout </a></div>
+                    </li>
+                    <li class="menu-item">
+                      <div class="title"> <a href="compare.html"> compare </a></div>
+                    </li>
+                  </ul>
+                </li>
+                <li class="menu-item customcontent menucol-2-5 ">
+                  <div class="normalized">
+                    <div class="custom-menu-bottom">
+                      <div class="menu-bottom col2"><a href="#"><img src="" alt="Women"></a> </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li class="mt-root">
+              <div class="mt-root-item">
+                <div class="title title_font"><span class="title-text">On sale</span></div>
+              </div>
+              <ul class="menu-items col-xs-12">
+              {% for product in random_items %}
+                <li class="menu-item depth-1 product menucol-1-4 withimage">
+                  <div class="product-item">
+                    <div class="item-inner fadeInUp">
+                      <div class="icon-sale-label sale-left">Sale</div>
+                      <div class="product-thumbnail">
+                        <div class="pr-img-area">
+                          <figure> <img class="first-img img-responsive" src="{{ product.get_image_url }}" alt=""> <img class="hover-img img-responsive" src="{{ product.get_image_url }}" alt=""></figure>
+                          <button type="button" class="add-to-cart-mt"> <i class="fa fa-shopping-cart"></i><span><a href="{% url 'cart' %}?item={{ product.get_defualt_variation_pk }}&qty=1">Add to Cart</a></span> </button>
+                        </div>
+                        <div class="pr-info-area">
+                          <div class="pr-button">
+                            <div class="mt-button add_to_wishlist"> <a href=""> <i class="fa fa-heart"></i> </a> </div>
+                            <div class="mt-button add_to_compare"> <a href=""> <i class="fa fa-signal"></i> </a> </div>
+                            <div class="mt-button quick-view"> <a href="{{ product.get_absolute_url }}"> <i class="fa fa-search"></i> </a> </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="item-info">
+                        <div class="info-inner">
+                          <div class="item-title"> <a title="{{ product.title }}" href="{{ product.get_absolute_url }}">{{ product.title }} </a> </div>
+                          <div class="item-content">
+                            <div class="rating"> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star-o"></i> </div>
+                            <div class="item-price">
+                              <div class="price-box"> <span class="regular-price"> <span class="price">${{ product.sale_price }}</span> </span> </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- end nav -->
