@@ -21,6 +21,9 @@
                   </div>
                   <button type="submit" class="btn btn-default">Submit</button>
                 </form>
+                <div class="favorite">
+                  <a href="{% url 'favorite' %}"><i class="fa fa-heart"></i><span class="hidden-xs">Favorite</span></a>
+                </div>
                 {% if request.user.username %}
                 <div class="myaccount"><a title="My Account" href="account_page.html"><i class="fa fa-user"></i>
                 <span class="hidden-xs">{{ request.user.username }}</span></a></div>
@@ -191,7 +194,7 @@
                         </div>
                         <div class="pr-info-area">
                           <div class="pr-button">
-                            <div class="mt-button add_to_wishlist"> <a href=""> <i class="fa fa-heart"></i> </a> </div>
+                            <div class="mt-button add_to_wishlist"> <a href="{{ product.variation_set.first.add_to_favorite_url }}"> <i class="fa fa-heart"></i> </a> </div>
                             <div class="mt-button add_to_compare"> <a href=""> <i class="fa fa-signal"></i> </a> </div>
                             <div class="mt-button quick-view"> <a href="{{ product.get_absolute_url }}"> <i class="fa fa-search"></i> </a> </div>
                           </div>

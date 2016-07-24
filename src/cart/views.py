@@ -67,12 +67,6 @@ class CartView(SingleObjectMixin, View):
         self.request.session["cart_id"] = cart.id
         return cart
 
-    def _try(self, a, b=None):
-        try:
-            return eval(a)
-        except:
-            return b
-
     def get(self, request, *args, **kwargs):
         cart = self.get_object()
         item_id = request.GET.get("item")
@@ -106,26 +100,31 @@ class CartView(SingleObjectMixin, View):
 
         if request.is_ajax():
             # total = self._try('cart_item.line_item_total')
-            try:
-                total = cart_item.line_item_total
-            except:
-                total = None
-            # subtotal = self._try('cart_item.cart.subtotal')
-            try:
-                subtotal = cart_item.cart.subtotal
-            except:
-                subtotal = None
-            # cart_total = self._try('cart_item.cart.total')
-            try:
-                cart_total = cart_item.cart.total
-            except:
-                cart_total = None
-            # tax_total = self._try('cart_item.cart.tax_total')
-            try:
-                tax_total = cart_item.cart.tax_total
-            except:
-                tax_total = None
-            # total_items = self._try('cart_item.cart.items.count()', 0)
+            # try:
+            #     total = cart_item.line_item_total
+            # except:
+            #     total = None
+            total = getattr(cart_item, 'line_item_total', None)
+            cart = getattr(cart_item, 'cart', None)
+            if cart:
+                subtotal = getattr(cart, 'subtotal', None)
+                cart_total = getattr(cart, 'total', None)
+                tax_total = getattr(cart, 'tax_total', None)
+            else:
+                subtotal = cart_total = tax_total = None
+
+            # try:
+            #     subtotal = cart_item.cart.subtotal
+            # except:
+            #     subtotal = None
+            # try:
+            #     cart_total = cart_item.cart.total
+            # except:
+            #     cart_total = None
+            # try:
+            #     tax_total = cart_item.cart.tax_total
+            # except:
+            #     tax_total = None
             try:
                 total_items = cart_item.cart.items.count()
             except:

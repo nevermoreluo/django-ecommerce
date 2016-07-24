@@ -161,6 +161,10 @@ class Variation(models.Model):
     def get_title(self):
         return "%s - %s" % (self.product.title, self.title)
 
+    def add_to_favorite_url(self):
+        return "%s?item=%s" % (reverse("favorite"), self.id)
+
+
 def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
     # 截获表单save事件，
     # 即当保存product时(不论新旧)，检测是否有Variation

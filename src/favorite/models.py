@@ -19,6 +19,19 @@ class FavoriteItem(models.Model):
         return self.variation.get_price()
 
 
+def favoriteItem_post_save(sender, instance, created, *args, **kwargs):
+    favoriteItem = instance
+    if created:
+        favoriteItem.old_price = favoriteItem.get_price()
+    elif not favoriteItem.old_price:
+        favoriteItem.old_price = favoriteItem.get_price()
+    else:
+        pass
+
+
+post_save.connect(favoriteItem_post_save, sender=FavoriteItem)
+
+
 def variation_post_save_receiver(sender, instance, created, *args, **kwargs):
     variation = instance
     if not created and variation.favoriteitem_set.count():

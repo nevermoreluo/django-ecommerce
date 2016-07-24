@@ -6,7 +6,7 @@ from django.contrib import admin
 from cart.views import CartView, ItemCountView, CheckoutView
 from products.views import VariationDetailView
 from orders.views import AddressSelectFormView, UserAddressCreateView
-
+from favorite.views import FavoriteView
 
 urlpatterns = [
     # Examples:
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^checkout/$', CheckoutView.as_view(), name='checkout'),
     url(r'^checkout/address/$', AddressSelectFormView.as_view(), name='order_address'),
     url(r'^checkout/address/add/$', UserAddressCreateView.as_view(), name='user_address_create'),
+    url(r'^favorite/$', FavoriteView.as_view(), name='favorite'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table class="table table-bordered cart_summary">
+    <thead>
+
+    <tr>
+      <th class="cart_product">Product</th>
+      <th>Description</th>
+      <!-- <th>Avail.</th> -->
+      <th>Unit price</th>
+      <th  class="action"><i class="fa fa-trash-o"></i></th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for item in object.favoriteitem_set.all %}
+    <tr>
+    <td class="favorite_product"><a href="{{ item.variation.get_absolute_url }}"><img src="{{ item.variation.product.get_image_url }}" ></a></td>
+    <td class="favorite_description"><p class="product-name"><a href="{{ item.variation.get_absolute_url }}">{{ item }} </a></p></td>
+    <td class="price">
+      {% if item.old_price %}
+      <span>${{ item.old_price }} </span>
+      {% endif %}
+    </td>
+    <td class="action"><a href="{% url 'favorite' %}?item={{ item.variation.pk }}&delete=True"><i class="fa fa-times" aria-hidden="true"></i></a>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
