@@ -32,6 +32,5 @@ admin.site.register(Product, ProductAdmin)
 
 # admin.site.register(ProductImage)
 
-# admin.site.register(Category)
 
 admin.site.register(ProductFeatured)

@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 
+
 DEFAULT_VARIATION_TITLE = "Default"
 
 
@@ -159,7 +160,6 @@ class Variation(models.Model):
 
     def get_title(self):
         return "%s - %s" % (self.product.title, self.title)
-
 
 def product_post_saved_receiver(sender, instance, created, *args, **kwargs):
     # 截获表单save事件，
